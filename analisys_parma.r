@@ -16,22 +16,21 @@ library(mgcv)
 library(XLConnect)
 
 ######################################################################################################
-setwd("/home/alf/Scrivania/aaa_lavori/lav_new_parma")
 
 source("aux_aster.r")
 
 ######################################################################################################
 # load geo data 
 
-confini_comune_ls=readRDS("confini_comune_landsat.rds")
-parma_urbanizzato_ls=readRDS("parma_urbanizzato_ls.rds")
-fabbricati_civilires_all=readRDS("fabbricati_civilires_all.rds")
-fabbricati_civilires_centroid=readRDS("fabbricati_civilires_centroid.rds")
+confini_comune_ls=readRDS("data/confini_comune_landsat.rds")
+parma_urbanizzato_ls=readRDS("data/parma_urbanizzato_ls.rds")
+fabbricati_civilires_all=readRDS("data/fabbricati_civilires_all.rds")
+fabbricati_civilires_centroid=readRDS("data/fabbricati_civilires_centroid.rds")
 
 area_urban=over(fabbricati_civilires_centroid,parma_urbanizzato_ls)[,1]
 
-consumo_suolo_2015=raster("parma_consumo_suolo_2015.tif")
-consumo_suolo_2012=raster("parma_consumo_suolo_2012.tif")
+consumo_suolo_2015=raster("data/parma_consumo_suolo_2015.tif")
+consumo_suolo_2012=raster("data/parma_consumo_suolo_2012.tif")
 
 consumo_suolo_2015_vx <- velox(consumo_suolo_2015)
 consumo_suolo_2012_vx <- velox(consumo_suolo_2012)
@@ -47,7 +46,7 @@ cs1ha_fabbricati=consumo_suolo_2015_vx$extract(fabbricati_civilires_centroid_1ha
 ####################################################################################################
 # Calcolo lst con emissività da tetti ad immagine aster 90 m TIRS 13 e 14
 
-setwd("/home/alf/Scrivania/aaa_lavori/lav_new_parma/night")
+setwd("night")
 
 file_list <- list.files(pattern = 'AST_L1T_.*hdf$')
 file_name=gsub(".hdf","",file_list)
@@ -93,9 +92,9 @@ writeRaster(mask(b14_parma_lst_night_E95[[i]],confini_comune_ls), filename=paste
 
 
 ###########################################################################################################################
-setwd("/home/alf/Scrivania/aaa_lavori/lav_new_parma/day")
+setwd("../day")
 
-#source("ASTERL1T_DN2REF.R")
+source("ASTERL1T_DN2REF.R")
 
 
 file_list <- list.files(pattern = 'AST_L1T_.*hdf$')
@@ -156,7 +155,7 @@ red_rf_day[[i]]=raster(paste0(file_name[[i]],"_ImageData3N_reflectance.tif"))
 
 ################################################################
 
-setwd("/home/alf/Scrivania/aaa_lavori/lav_new_parma")
+setwd("..")
 
 lst_fabbricati_b14_night_E90=list()
 lst_fabbricati_b13_night_E95=list()
@@ -252,8 +251,8 @@ XLConnect::writeWorksheetToFile(paste0(file_name_night[i],"_lst_night.xls"),res_
 }
 
 ###########################################################################################################################
-consumo_suolo_2015=raster("parma_consumo_suolo_2015.tif")
-consumo_suolo_2012=raster("parma_consumo_suolo_2012.tif")
+consumo_suolo_2015=raster("data/parma_consumo_suolo_2015.tif")
+consumo_suolo_2012=raster("data/parma_consumo_suolo_2012.tif")
 
 consumo_suolo_2015_vx <- velox(consumo_suolo_2015)
 consumo_suolo_2012_vx <- velox(consumo_suolo_2012)
@@ -269,8 +268,8 @@ cs1ha_fabbricati=consumo_suolo_2015_vx$extract(fabbricati_civilires_centroid_1ha
 
 ###########################################################################################################################
 
-banda_vnir_aster=raster("band_merge.tif")
-png("aster_image_parma.png")
+banda_vnir_aster=raster("data/band_merge.tif")
+png("data/aster_image_parma.png")
 plotRGB(stack(banda_vnir_aster),r=3,g=2,b=1, scale=800, stretch = "Lin")
 dev.off()
 ###########################################################################################################################
@@ -323,8 +322,8 @@ fabbricati_civilires_all$lst_landsat=lst_fabbricati_landsat
 ###########################################################################################################################à
 # load censuary data
 
-table_2014=readRDS("table_2014_parma_class.rds")
-table_2015=readRDS("table_2015_parma_class.rds")
+table_2014=readRDS("data/table_2014_parma_class.rds")
+table_2015=readRDS("data/table_2015_parma_class.rds")
 
 table_2014$perc_u_5_14=t(apply(table_2014[c(1,2)],1,function(x) sum(x,na.rm=T))/table_2014$sum2014)
 table_2014$perc_o_65=apply(table_2014[c(9,10)],1,function(x) sum(x,na.rm=T))/table_2014$sum2014
@@ -334,11 +333,11 @@ table_2015$perc_u_5=apply(table_2015[c(1,2)],1,function(x) sum(x,na.rm=T))/table
 table_2015$perc_o_65=apply(table_2015[c(9,10)],1,function(x) sum(x,na.rm=T))/table_2015$sum2015
 table_2015$perc_o_75=apply(table_2015[c(10)],1,function(x) sum(x,na.rm=T))/table_2015$sum2015
 
-saveRDS(table_2014,"table_2014_parma_class.rds")
-saveRDS(table_2015,"table_2015_parma_class.rds")
+saveRDS(table_2014,"data/table_2014_parma_class.rds")
+saveRDS(table_2015,"data/table_2015_parma_class.rds")
 
-table_2014=readRDS("table_2014_parma_class.rds")
-table_2015=readRDS("table_2015_parma_class.rds")
+table_2014=readRDS("data/table_2014_parma_class.rds")
+table_2015=readRDS("data/table_2015_parma_class.rds")
 
 XLConnect::writeWorksheetToFile("table_2014.xls",table_2014,sheet="table_2014")
 XLConnect::writeWorksheetToFile("table_2015.xls",table_2015,sheet="table_2015")
@@ -372,12 +371,12 @@ for ( i in 1:length(table_2015$SEZCENS)){
   
 }  
 
-saveRDS(fabbricati_civilires_all,"fabbricati_civilires_all.rds")
+saveRDS(fabbricati_civilires_all,"data/fabbricati_civilires_all.rds")
 
 ########################################################################################à
 # Analisi del rischio
 
-fabbricati_civilires_all=readRDS("fabbricati_civilires_all.rds")
+fabbricati_civilires_all=readRDS("data/fabbricati_civilires_all.rds")
 
 fabbricati_civilires_all$cs200_scaled=as.numeric(scale(fabbricati_civilires_all$cs200,center=min(fabbricati_civilires_all$cs200,na.rm=T),scale=diff(range(fabbricati_civilires_all$cs200))))
 
@@ -493,7 +492,7 @@ fabbricati_civilires_all$cs57=as.numeric(fabbricati_civilires_all$cs57)
 
 writeOGR(fabbricati_civilires_all,".","risk_parma_fcivres",driver="ESRI Shapefile",overwrite_layer = T)
 
-saveRDS(fabbricati_civilires_all,"fabbricati_civilires_all.rds")
+saveRDS(fabbricati_civilires_all,"data/fabbricati_civilires_all.rds")
 
 XLConnect::writeWorksheetToFile("analisi_rischio_ed.xls",data.frame(fabbricati_civilires_all@data),sheet="risk_parma")
 
