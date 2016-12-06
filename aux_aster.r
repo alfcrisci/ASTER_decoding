@@ -198,6 +198,7 @@ klist_ASTER$B12$unitconversion=6.590e-3
 klist_ASTER$B13$unitconversion=5.693e-3
 klist_ASTER$B14$unitconversion=5.225e-3
 klist_ASTER$c2micro=14388
+saveRDS(emiss_ASTER,"klist_ASTER.rds")
 
 emiss_ASTER=list()
 emiss_ASTER$mattoni_rossi$emis = 0.94
